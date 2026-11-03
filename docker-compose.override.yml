@@ -1,0 +1,3 @@
+# Intentionally empty for production.
+# For local development, see docker-compose.dev.yml
+services: {}

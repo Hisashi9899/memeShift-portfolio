@@ -1,0 +1,55 @@
+{
+  "name": "memeshift/backend",
+  "license": "proprietary",
+  "type": "project",
+  "description": "memeShift backend (Laravel) - Clean Architecture structure",
+  "require": {
+    "php": "^8.1",
+    "laravel/framework": "^10.0",
+    "laravel/sanctum": "^3.0",
+    "barryvdh/laravel-dompdf": "^2.0",
+    "symfony/process": "^6.0",
+    "memeshift/shared": "dev-main"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.9",
+    "phpunit/phpunit": "^11.0",
+    "mockery/mockery": "^1.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",
+      "Database\\Factories\\": "database/factories/",
+      "Database\\Seeders\\": "database/seeders/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../shared"
+    }
+  ],
+  "extra": {
+    "laravel": {
+      "dont-discover": []
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "8.2"
+    },
+    "policy": {
+      "advisories": {
+        "block": false
+      }
+    },
+    "audit": {
+      "block-insecure": false
+    }
+  }
+}

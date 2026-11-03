@@ -1,0 +1,13 @@
+{
+  "name": "memeshift/shared",
+  "description": "Shared DTOs for memeShift (backend + logic)",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Shared\\DTO\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.1"
+  }
+}

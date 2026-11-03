@@ -1,0 +1,47 @@
+# Environment
+.env
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development
+!**/.env.example
+!**/.env.testing
+
+# Dependencies / build outputs
+**/node_modules/
+**/vendor/
+frontend/.next/
+frontend/playwright-report/
+frontend/test-results/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.aider*
+
+# Local DB dumps (may contain personal data — never commit)
+dump.sql
+backup_*.sql
+*.dump
+
+# Local diagnostic / verification scripts (regenerable, not part of the app)
+diag_*.php
+verify_*.php
+measure_*.php
+tmp_*.php
+
+# Laravel generated files
+/backend/public/storage
+/backend/storage/logs/*
+!/backend/storage/logs/.gitignore
+/backend/storage/fonts/*.ufm
+/backend/storage/fonts/*.ufm.json
+/backend/storage/fonts/installed-fonts.json
+/backend/storage/fonts/*.afm.json
+/backend/storage/fonts/ipagothic_*.ttf

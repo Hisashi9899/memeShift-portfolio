@@ -1,0 +1,33 @@
+# Local development override for memeShift.
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile dev up -d
+#
+# Production (no dev file needed):
+#   docker compose -f docker-compose.yml --profile prod up -d
+
+services:
+  laravel:
+    build:
+      dockerfile: docker/laravel/Dockerfile
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+    volumes:
+      - ./backend:/var/www/html:cached
+      - laravel_vendor:/var/www/html/vendor
+
+  nextjs:
+    build:
+      dockerfile: docker/nextjs/Dockerfile
+      target: ${NEXTJS_TARGET:-deps}
+    volumes:
+      - ./frontend:/app:cached
+      - /app/node_modules
+    command: ${NEXTJS_COMMAND:-npm run dev}
+    environment:
+      NEXT_PUBLIC_API_URL: "/api"
+      NEXT_PUBLIC_SANCTUM_URL: "/api"
+
+  mysql:
+    ports:
+      - "3307:3306"

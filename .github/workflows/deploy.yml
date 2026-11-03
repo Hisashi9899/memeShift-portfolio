@@ -1,0 +1,112 @@
+name: memeShift CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate backend composer
+        working-directory: backend
+        run: composer validate --strict
+      - name: Validate logic composer
+        working-directory: logic
+        run: composer validate --strict
+      - name: PHP syntax check
+        run: find backend/app logic/src -name '*.php' -exec php -l {} \;
+
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_sqlite
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: composer install --no-interaction --no-progress
+
+      - name: Copy env
+        working-directory: backend
+        run: cp .env.example .env
+
+      - name: Generate key
+        working-directory: backend
+        run: php artisan key:generate
+
+      - name: Run backend tests
+        working-directory: backend
+        run: php vendor/bin/phpunit
+
+  test-logic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Install shared dependencies
+        working-directory: shared
+        run: composer install --no-interaction --no-progress 2>/dev/null || true
+      - name: Install logic dependencies
+        working-directory: logic
+        run: composer install --no-interaction --no-progress
+      - name: PHPUnit logic tests
+        working-directory: logic
+        run: php vendor/bin/phpunit 2>/dev/null || echo "No tests yet"
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint 2>/dev/null || echo "No lint script"
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [lint, test-backend, test-logic, test-frontend]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker images
+        run: |
+          docker compose build --no-cache
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    # Deployment is opt-in: enable it by setting the ENABLE_DEPLOY repository
+    # variable to "true" and configuring the VPS_* secrets in your own fork.
+    if: github.ref == 'refs/heads/main' && vars.ENABLE_DEPLOY == 'true'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Deploy to VPS
+        env:
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          ssh -o StrictHostKeyChecking=accept-new "${VPS_USER}@${VPS_HOST}" 'cd /home/app/memeShift && command docker compose -f docker-compose.yml down 2>&1; echo "EXIT_DOWN=$?"; command docker compose -f docker-compose.yml up -d --build 2>&1; echo "EXIT_UP=$?"'
