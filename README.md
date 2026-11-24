@@ -100,6 +100,8 @@ The result is a product a care-facility manager can trust, not a spreadsheet wit
 | 明け | Post-night rest |
 | 休み | Day off |
 
+> The roster table is optimized for a desktop browser; the landing page and demo login are responsive.
+
 ### Delivery shape
 
 | Phase | Focus |
