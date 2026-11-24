@@ -11,8 +11,15 @@
 **/node_modules/
 **/vendor/
 frontend/.next/
+frontend/out/
 frontend/playwright-report/
 frontend/test-results/
+*.tsbuildinfo
+*.webm
+*.mp4
+
+# Screenshot originals (keep only the published WebP/GIF assets)
+docs/screenshots/_raw/
 
 # OS
 .DS_Store
