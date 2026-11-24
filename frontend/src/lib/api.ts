@@ -1,4 +1,5 @@
 import { tokenStorage } from './token';
+import { DEMO_MODE, demoBlob, demoRequest } from './demo';
 import type {
   AutoFixApproachResponseDTO,
   AutoFixResponseDTO,
@@ -29,6 +30,7 @@ function authHeaders(): Record<string, string> {
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  if (DEMO_MODE) return demoRequest<T>(path, options);
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -44,6 +46,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 async function requestBlob(path: string): Promise<Blob> {
+  if (DEMO_MODE) return demoBlob(path);
   const headers: Record<string, string> = {
     ...authHeaders(),
   };

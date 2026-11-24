@@ -1,6 +1,9 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { tokenStorage } from '@/lib/token';
+import { DEMO_MODE, demoFetch } from '@/lib/demo';
+
+const httpFetch: typeof fetch = DEMO_MODE ? demoFetch : fetch;
 
 interface BreakRoute {
   routeId: string;
@@ -40,7 +43,7 @@ export function RouteStepper({ month, route, onClose }: { month: string; route: 
     (async () => {
       try {
         const token = tokenStorage.get();
-        const res = await fetch(`/api/route-diff?month=${month}&routeId=${encodeURIComponent(route.routeId)}`, {
+        const res = await httpFetch(`/api/route-diff?month=${month}&routeId=${encodeURIComponent(route.routeId)}`, {
           credentials: 'include',
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
@@ -54,7 +57,7 @@ export function RouteStepper({ month, route, onClose }: { month: string; route: 
     setApplying(true);
     try {
       const token = tokenStorage.get();
-      const res = await fetch('/api/apply-route', {
+      const res = await httpFetch('/api/apply-route', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },

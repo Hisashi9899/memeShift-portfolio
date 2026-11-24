@@ -1,8 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { tokenStorage } from '@/lib/token';
+import { DEMO_MODE, demoFetch } from '@/lib/demo';
 import { RouteStepper } from './RouteStepper';
 import type { Conflict } from '@/types';
+
+const httpFetch: typeof fetch = DEMO_MODE ? demoFetch : fetch;
 
 interface BreakRoute {
   routeId: string;
@@ -75,7 +78,7 @@ function buildLocalRoutes(conflicts: Conflict[]): BreakRoute[] {
 async function fetchHighlightKeys(month: string, routeId: string | undefined, token: string | null): Promise<string[]> {
   if (!month || !routeId) return [];
   try {
-    const res = await fetch(`/api/break-routes?month=${month}`, {
+    const res = await httpFetch(`/api/break-routes?month=${month}`, {
       credentials: 'include',
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     });
@@ -132,7 +135,7 @@ export function BreakRoutesPanel({ conflicts, onClose, autoResolve = false }: { 
       try {
         const month = conflicts[0]?.date?.slice(0, 7) ?? '';
         const token = tokenStorage.get();
-        const res = await fetch(`/api/break-routes${month ? `?month=${month}` : ''}`, {
+        const res = await httpFetch(`/api/break-routes${month ? `?month=${month}` : ''}`, {
           credentials: 'include',
           headers: token ? { Authorization: `Bearer ${token}` } : undefined,
         });
@@ -158,7 +161,7 @@ export function BreakRoutesPanel({ conflicts, onClose, autoResolve = false }: { 
     try {
       const m = conflicts[0]?.date?.slice(0, 7) ?? '';
       const token = tokenStorage.get();
-      const res = await fetch('/api/auto-resolve', {
+      const res = await httpFetch('/api/auto-resolve', {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },

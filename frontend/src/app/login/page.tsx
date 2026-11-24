@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
+import { DEMO_MODE } from '@/lib/demo';
 
 function CornerPaw({ position, pressed }: { position: string; pressed: boolean }) {
   const posClass: Record<string, string> = {
@@ -208,12 +209,13 @@ export default function LoginPage() {
           <div>
             <label className={`block text-xs font-medium mb-1.5 ${bgUrl ? 'text-white/80 drop-shadow-lg' : 'text-gray-500'}`}>ユーザー名</label>
             <input ref={usernameRef} type="text" name="username" autoComplete="username"
-              defaultValue={typeof window !== 'undefined' ? localStorage.getItem('remembered_user') || '' : ''}
+              defaultValue={DEMO_MODE ? 'demo' : (typeof window !== 'undefined' ? localStorage.getItem('remembered_user') || '' : '')}
               className={'w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400/40 transition-all duration-150' + (bgUrl ? ' bg-white/30 backdrop-blur-sm border-white/20 text-white placeholder-white/40' : ' bg-white border-surface-border text-gray-900 placeholder-gray-300')} required />
           </div>
           <div>
             <label className={`block text-xs font-medium mb-1.5 ${bgUrl ? 'text-white/80 drop-shadow-lg' : 'text-gray-500'}`}>パスワード</label>
             <input ref={passwordRef} type="password" name="password" autoComplete="current-password"
+              defaultValue={DEMO_MODE ? 'demo' : undefined}
               className={'w-full px-3.5 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400/40 transition-all duration-150' + (bgUrl ? ' bg-white/30 backdrop-blur-sm border-white/20 text-white placeholder-white/40' : ' bg-white border-surface-border text-gray-900 placeholder-gray-300')} required />
           </div>
           {error && <p className={`text-xs ${bgUrl ? 'text-red-300' : 'text-red-500'}`}>{error}</p>}
@@ -221,6 +223,12 @@ export default function LoginPage() {
             className={'w-full py-2 px-4 rounded-lg disabled:opacity-40 transition-all duration-150 text-sm font-medium' + (bgUrl ? ' bg-primary-600/70 backdrop-blur-sm text-white hover:bg-primary-600/90 border border-primary-400/30' : ' bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700 shadow-sm')}>
             {loading ? 'ログイン中...' : 'ログイン'}
           </button>
+          {DEMO_MODE && (
+            <p className="text-center text-[11px] text-gray-400 leading-relaxed">
+              Static demo · synthetic data only<br />
+              <span className="text-gray-500">Demo mode: any credentials work</span>
+            </p>
+          )}
           <div className="text-xs text-gray-400 text-right mt-2">v1.0.0</div>
         </form>
       </div>
