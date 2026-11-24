@@ -68,16 +68,6 @@ export function ScheduleBoard({ month }: { month: string }) {
         api.getStaff(),
         api.getShiftTypes(),
       ]);
-      console.log("ScheduleBoard load expected keys:", Object.keys(scheduleRes));
-      console.log("ScheduleBoard patterns count:", scheduleRes.patterns?.length);
-      if (scheduleRes.patterns?.[0]) {
-        console.log("ScheduleBoard first pattern keys:", Object.keys(scheduleRes.patterns[0]));
-        console.log("ScheduleBoard first pattern month_year:", scheduleRes.patterns[0].month_year);
-        console.log("ScheduleBoard first pattern cells count:", scheduleRes.patterns[0].cells?.length);
-        if (scheduleRes.patterns[0].cells?.[0]) {
-          console.log("ScheduleBoard first cell:", JSON.stringify(scheduleRes.patterns[0].cells[0]));
-        }
-      }
       setPatterns(scheduleRes.patterns);
       setStaff(staffRes.data);
       setShiftTypes(shiftTypesRes.data);

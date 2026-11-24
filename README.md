@@ -1,200 +1,428 @@
 # memeShift
 
-介護施設向けのシフト自動作成 Web アプリケーションです。
-スタッフの希望休・勤務条件・必要人数・相性ルールを入力すると、夜勤→明け→休みの連鎖や連勤上限といった現場固有の制約を考慮した勤務表を生成します。
+[![CI](https://github.com/Hisashi9899/memeShift-portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/Hisashi9899/memeShift-portfolio/actions/workflows/deploy.yml)
 
-このリポジトリは技術評価用のサニタイズ済みスナップショットです。実運用の設定・ドメイン・認証情報・個人情報は含まれていません。
+**Constraint-aware shift scheduling for care facilities — deterministic generation, fairness scoring, and explainable failures.**
 
----
+**Solo build · ~6 weeks · Next.js 14 + Laravel 10 + a standalone PHP scheduling engine.**
 
-## 主な機能
+memeShift turns staff availability, required headcount, compatibility rules, and Japanese care-facility shift patterns into a monthly roster. It is built as a small end-to-end product: a Next.js front end, a Laravel API, a standalone PHP scheduling engine, MySQL, Docker, and CI.
 
-| 機能 | 概要 |
-|------|------|
-| スタッフ管理 | 勤務可能日、雇用形態、スキル、ソート順の一括編集 |
-| シフト種別 | 日勤・早番・遅番・夜勤・明けなどの時刻・色定義 |
-| 必要人数設定 | シフト種別 × 曜日/日付ごとの必要人数、日別上書き |
-| 希望休・希望シフト | スタッフごとの休み希望・固定シフト |
-| 相性ルール | 同時勤務の可否（組み合わせ禁止） |
-| 自動生成 | 制約充足 + 公平性評価による月次勤務表の生成 |
-| 自動修正 | 違反箇所の局所修復、崩しルートの探索・適用 |
-| 分析 | サマリ、タイムライン、制約違反一覧、年次・成長統計 |
-| エクスポート | CSV / PDF（IPA フォントによる日本語出力） |
-| 失敗理由の説明 | 生成不可時に不足条件を自然言語で提示 |
+The scheduling core is intentionally separated from the web framework, so the same engine can run as a library, a CLI process, or inside the API. Generation is not a black box: when a roster cannot be completed, the system explains which constraint is short, by how much, and what to change.
+
+> **Portfolio snapshot.** This public repository is a sanitized snapshot for technical evaluation. It contains no real staff, facility, patient, customer, domain, or credential data. The UI is in Japanese because the target users are Japanese care facilities; English captions are provided with the screenshots.
 
 ---
 
-## アーキテクチャ
+## Screenshots
 
+**[Open the static demo](https://hisashi9899.github.io/memeShift-portfolio/)** — a client-side build with deterministic synthetic data. No account, API, database, or backend is required. Any credentials work on the login screen.
+
+<p align="center">
+  <img src="docs/screenshots/demo.gif" alt="memeShift demo: login, monthly roster, conflict explanation, analytics" width="820">
+</p>
+
+<table>
+  <tr>
+    <td><img src="docs/screenshots/login.webp" alt="Login screen" width="420"></td>
+    <td><img src="docs/screenshots/dashboard.webp" alt="Monthly roster" width="420"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Login — static demo mode</sub></td>
+    <td align="center"><sub>Monthly roster — 10 synthetic staff, 30 days, shift codes</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/conflicts.webp" alt="Conflict explanation after generation" width="420"></td>
+    <td><img src="docs/screenshots/staff.webp" alt="Staff management" width="420"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Conflict explanation — shortfall date, shift, required vs. assigned</sub></td>
+    <td align="center"><sub>Staff management — employment type, night capability, max consecutive days</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/preferences.webp" alt="Preference calendar and registered requests" width="420"></td>
+    <td><img src="docs/screenshots/statistics.webp" alt="Yearly analytics dashboard" width="420"></td>
+  </tr>
+  <tr>
+    <td align="center"><sub>Preferences — day-off and fixed-shift requests</sub></td>
+    <td align="center"><sub>Analytics — workload, fairness, safety, and growth metrics</sub></td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="docs/screenshots/ci-success.webp" alt="GitHub Actions CI success" width="840">
+  <br>
+  <sub>CI/CD — lint, backend, logic, frontend, and secret scan; Docker/deploy skipped on pull requests</sub>
+</p>
+
+> All screenshots use synthetic demo data (`Staff A` … `Staff J`). No production account or real roster is shown.
+
+---
+
+## Why this is unusual
+
+Most scheduling demos stop at a form and a table. memeShift has to reason about interacting constraints:
+
+- **Night chains** — a night shift reserves the next day as post-night (`明け`) and the day after as rest.
+- **Fairness** — night counts, early/late balance, holiday budgets, and preference achievement are measured across the year.
+- **Explainability** — every failure names the date, shift, required vs. assigned headcount, and the likely cause.
+- **Repair without silent rewrites** — local repair and break-route search are ranked and shown first; applying a route is an explicit human decision.
+
+The result is a product a care-facility manager can trust, not a spreadsheet with a generate button.
+
+### Scope delivered by one engineer in ~6 weeks
+
+| Area | Evidence |
+|---|---|
+| API | 43 REST endpoints, 14 domain services, Sanctum auth |
+| Frontend | 6 screens, 25 components, 4,100+ lines of TypeScript/TSX |
+| Engine | 37 KB standalone PHP engine, zero Laravel dependencies, 4 PHPUnit tests |
+| Data | 15 migrations, MySQL 8 |
+| Infrastructure | Docker Compose, Nginx, GitHub Actions, static GitHub Pages demo |
+| Quality | PHP lint, backend PHPUnit, engine PHPUnit, TypeScript, Next build, gitleaks |
+
+> The point is not the line count. The point is that the same person designed the domain model, wrote the engine, shipped the UI, and set up the delivery pipeline.
+
+### Try it in two minutes
+
+1. Open the static demo — any credentials work.
+2. Click **勤務自動作成** (Generate roster) and read the conflict panel.
+3. Open **統計** (Statistics) for workload, fairness, safety, and growth metrics.
+4. Open **希望入力** (Preferences) for day-off and fixed-shift requests.
+
+| Japanese UI | English |
+|---|---|
+| 勤務自動作成 | Generate roster |
+| 勤務パターン制約 | Scheduling constraints |
+| 希望入力 | Preferences |
+| 設定 | Settings |
+| 統計 | Statistics |
+| 明け | Post-night rest |
+| 休み | Day off |
+
+### Delivery shape
+
+| Phase | Focus |
+|---|---|
+| 1 | Domain model, MySQL schema, API surface |
+| 2 | Generation engine, constraints, fairness metrics |
+| 3 | Local repair, break-route search, explainability |
+| 4 | Next.js UI, Docker, CI, static demo |
+
+---
+
+## Project Overview
+
+Care-facility scheduling is a constrained optimization problem with soft preferences and hard safety rules. A roster must satisfy headcount requirements while respecting:
+
+- night shift → post-night (`明け`) → rest chains;
+- maximum consecutive working days;
+- staff-specific night-shift capability and employment type;
+- requested days off and fixed shifts;
+- compatibility rules between staff members;
+- fair distribution of nights, early shifts, late shifts, and holidays.
+
+memeShift models these constraints explicitly and generates a roster in phases. It then evaluates the result, reports violations, and offers repair strategies. The design goal is not “generate anything”, but “generate something defensible, and explain why when it cannot”.
+
+**What this demonstrates**
+
+| Capability | Evidence in the codebase |
+|---|---|
+| Domain modelling | Shift types, requirements, preferences, compatibility rules, daily overrides |
+| Constraint solving | `ConstraintChecker`, `ShiftAssigner`, `OffDayDistributor`, `PatternRotator` |
+| Fairness scoring | `ScheduleStatsService`, `ScheduleAnalysisService` |
+| Local repair | `ConflictRepairer`, `ScheduleAutoFixService`, `ScheduleAutoFixOrchestrator` |
+| Explainability | `ScheduleFailureExplanationService` — natural-language shortfall explanations |
+| API design | Laravel controllers, Sanctum authentication, throttled login |
+| Front-end delivery | Next.js 14 App Router, TypeScript, Tailwind CSS, Recharts |
+| Operational hygiene | Docker Compose, Nginx, GitHub Actions, secret-free configuration |
+| Safe public demo | Deterministic client-side demo mode and static export |
+
+---
+
+## Key Architectural Highlights
+
+### 1. Constraint-aware generation, not random filling
+
+Generation is built from domain rules rather than a generic solver:
+
+- **Night blocks** — assigning a night shift reserves the following day as post-night (`明け`) and the day after as rest.
+- **Headcount** — each shift type has a required count; daily overrides can raise or lower it for a specific date.
+- **Consecutive days** — staff-specific maximum consecutive working days are enforced during assignment.
+- **Compatibility** — `must_together` / `must_separate` rules prevent unsafe pairings.
+- **Preferences** — requested days off and fixed shifts are applied before general assignment.
+
+The result is a roster that reflects how care facilities actually operate, not a generic round-robin.
+
+### 2. Fairness is measured, not assumed
+
+`ScheduleStatsService` and `ScheduleAnalysisService` calculate workload and fairness indicators across the year:
+
+- night-shift counts and night → post-night frequency;
+- average consecutive days and early/late imbalance;
+- holiday counts per staff member;
+- preference achievement rate and change-request frequency;
+- safety indicators such as dangerous patterns and short intervals.
+
+The same metrics drive the dashboard charts and the generator’s balancing decisions.
+
+### 3. Explainable failures
+
+When a roster cannot be completed, `ScheduleFailureExplanationService` produces a structured explanation:
+
+- which date and shift type are short;
+- required vs. assigned headcount;
+- whether the cause is night capability, consecutive-day limits, preference concentration, or a compatibility rule;
+- suggested actions, including which screen to open.
+
+This turns “generation failed” into an actionable message for a scheduler.
+
+### 4. Local repair and break-route search
+
+Instead of regenerating from scratch, the system can repair an existing roster:
+
+- `ConflictRepairer` resolves local violations while preserving fixed cells;
+- `ScheduleAutoFixService` tries bounded repair strategies;
+- `ScheduleAutoFixOrchestrator` evaluates approaches and recommends one;
+- `BreakRouteService` explores “break routes” (relax a constraint, move a preference, release a fixed shift) and ranks them by candidate gain and penalty.
+
+Applying a break route is an explicit, confirmed action. The UI does not silently rewrite a published roster.
+
+### 5. Clean separation of the scheduling engine
+
+The PHP engine under `logic/` has **zero Laravel dependencies**. It can run as:
+
+- a library used by the API;
+- a standalone CLI process;
+- an equivalence-tested reference implementation.
+
+`shared/` contains the DTOs used by both the engine and the API. This keeps the domain logic testable without booting a web application.
+
+### 6. Next.js front end with a real-time editing surface
+
+The front end is a client-side Next.js 14 application:
+
+- monthly roster with fixed, swapped, and highlighted cells;
+- constraint panel with toggles for night chains, consecutive limits, and equalization;
+- conflict panel with jump-to-source actions;
+- preference calendar with multi-staff selection;
+- yearly analytics with per-staff filtering;
+- CSV and PDF export.
+
+### 7. Deterministic demo mode
+
+The public demo runs entirely in the browser:
+
+- `NEXT_PUBLIC_DEMO_MODE=1` switches the API layer to deterministic synthetic data;
+- `next build` produces a static export (`out/`) with a configurable base path;
+- no backend, database, account, or credential is required;
+- demo data is generated for the requested month, so the demo does not go stale.
+
+This makes the public preview safe to share while keeping the production code path unchanged.
+
+### 8. Operational hygiene
+
+- Docker Compose profiles for production and development;
+- Nginx serving the Next.js front end and proxying the Laravel API;
+- GitHub Actions for PHP syntax checks, Composer validation, PHPUnit, TypeScript, Next.js build, and static demo build;
+- secrets only through environment variables and GitHub Secrets;
+- deployment is opt-in (`ENABLE_DEPLOY`), never automatic.
+
+---
+
+## System Architecture
+
+```mermaid
+flowchart LR
+  B[Browser] --> N[Nginx]
+  N --> F[Next.js 14]
+  N --> A[Laravel 10 API]
+  A --> DB[(MySQL 8)]
+  A --> E[PHP Scheduling Engine]
+  E --> S[Shared DTOs]
+  A --> S
+  F -. NEXT_PUBLIC_DEMO_MODE=1 .-> D[Deterministic demo data]
+  E --> T[PHPUnit]
+  A --> P[PHPUnit]
+  F --> C[TypeScript / Next build]
 ```
-┌──────────────┐   HTTP    ┌──────────────┐   FastCGI   ┌──────────────────┐
-│  Next.js 14  │ ────────▶ │    Nginx     │ ──────────▶ │  Laravel 10      │
-│  (TypeScript)│           │              │             │  (PHP 8.2)       │
-└──────────────┘           │              │             │  Interface層      │
-                           │              │             │  Service層        │
-                           │              │             └────────┬─────────┘
-                           │              │                      │
-                           │              │             ┌────────▼─────────┐
-                           │              │             │  MySQL 8         │
-                           └──────────────┘             └──────────────────┘
-                                        │
-                              ┌─────────▼──────────┐
-                              │ logic (PHP CLI)     │
-                              │ 依存ゼロの生成エンジン │
-                              └────────────────────┘
-```
 
-- **frontend/** — Next.js 14 (App Router) + TypeScript + Tailwind CSS
-- **backend/** — Laravel 10。`app/Interface/Controllers` に HTTP 層、`app/Services` にドメインサービスを配置
-- **logic/** — Laravel に依存しない単体実行可能なスケジューリングエンジン（`logic/src/ScheduleEngine.php`）
-- **shared/** — backend と logic が共有する DTO（Composer path repository）
-- **docker/** — Laravel / Next.js / logic の Dockerfile と Nginx 設定
+**Request flow**
 
-### ディレクトリ構成
+1. The browser loads the Next.js front end.
+2. API calls go through Nginx to Laravel.
+3. Laravel loads master data and invokes the scheduling engine.
+4. The engine returns patterns, cells, conflicts, and explanations.
+5. The front end renders the roster and the conflict panel.
+
+In demo mode, step 2 is replaced by the client-side demo adapter; the UI and domain types remain the same.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Front end | Next.js 14 (App Router), React 18, TypeScript 5, Tailwind CSS, Recharts |
+| API | PHP 8.2, Laravel 10, Laravel Sanctum |
+| Scheduling engine | PHP 8.2, standalone (`logic/`), PHPUnit |
+| Database | MySQL 8 |
+| Web server | Nginx |
+| Packaging | Docker, Docker Compose |
+| CI | GitHub Actions |
+| Static demo | Next.js static export, GitHub Pages |
+| PDF export | barryvdh/laravel-dompdf with IPA font |
+
+---
+
+## Repository Layout
 
 ```
 .
-├── backend/                 Laravel アプリケーション
-│   ├── app/
-│   │   ├── Interface/       Controller / Request / Resource
-│   │   ├── Services/        生成・分析・修復・エクスポート
-│   │   └── Models/          Eloquent モデル
-│   ├── database/            migrations / seeders
+├── backend/                 Laravel application
+│   ├── app/Interface/       HTTP controllers
+│   ├── app/Services/        Generation, repair, analysis, export
+│   ├── app/Models/          Eloquent models
+│   ├── database/            Migrations and seeders
 │   ├── routes/api.php       REST API
 │   └── tests/               PHPUnit
-├── frontend/                Next.js アプリケーション
-│   ├── src/app/             login / dashboard / settings / preferences / statistics / growth
-│   ├── src/components/      UI コンポーネント
-│   └── e2e/                 Playwright E2E
-├── logic/                   スタンドアロン生成エンジン
+├── frontend/                Next.js application
+│   ├── src/app/             login, dashboard, settings, preferences, statistics, growth
+│   ├── src/components/      UI components
+│   └── e2e/                 Playwright tests
+├── logic/                   Standalone scheduling engine
 │   ├── src/ScheduleEngine.php
-│   └── tests/               等価性テスト
-├── shared/                  共有 DTO
-├── docker/                  Dockerfile / Nginx 設定
-└── docker-compose.yml
+│   └── tests/               Equivalence tests
+├── shared/                  Shared DTOs
+├── docs/screenshots/        README assets (synthetic data)
+├── docker/                  Dockerfiles and Nginx configuration
+├── docker-compose.yml
+└── .github/workflows/       CI and static demo deployment
 ```
 
 ---
 
-## スケジューリングの設計
+## Setup & Demo Mode
 
-生成は「制約充足による構築」と「違反の局所修復」の二段構えです。
+### Prerequisites
 
-### 1. マスタデータの読み込み
+- Docker and Docker Compose (full stack)
+- Node.js 20+ (front end and static demo)
+- PHP 8.2+ and Composer 2 (backend / engine, optional)
 
-スタッフ、シフト種別、必要人数、日別上書き、希望休、固定シフト、相性ルール、祝日数を一括で読み込みます（`MasterDataLoader`）。
+### Static demo (recommended for reviewers)
 
-### 2. 制約を意識した構築
+```bash
+cd frontend
+npm ci
+NEXT_IGNORE_INCORRECT_LOCKFILE=1 \
+NEXT_PUBLIC_DEMO_MODE=1 \
+NEXT_PUBLIC_BASE_PATH=/memeShift-portfolio \
+npm run build
 
-- **希望休の反映** — 希望休は最初に確定し、以降の割当から除外
-- **夜勤ブロック** — 夜勤を割り当てたら翌日は「明け」、その翌日は休みとしてブロックを形成
-- **シフト割当** — 必要人数と勤務可能条件を満たす候補をスコアリングして割当（`ShiftAssigner`）
-- **公休日の配分** — 月内の公休数が偏らないよう残りの休みを分散（`OffDayDistributor`）
+# serve the exported site
+npx serve out
+# or: python3 -m http.server --directory out 8080
+```
 
-### 3. 公平性と制約の評価
+Open the printed URL. The demo is client-side only and uses synthetic data for the requested month.
 
-- 夜勤回数の均等化
-- 連勤上限（既定 5 日）
-- 夜勤→明け→休みの連鎖
-- 遅番→早番、日勤→早番の禁止
-- 同時勤務の相性ルール
-
-違反は `ConstraintChecker` が検出し、`ConflictRepairer` が局所的に修復します。修復しきれない場合は `ScheduleFailureExplanationService` が「どの条件がどれだけ不足しているか」を説明します。
-
-### 4. 自動修正（崩しルート）
-
-`BreakRouteService` は、現在の勤務表に対する「崩し」の候補を生成し、違反数・公平性スコアの改善量で順位付けします。適用は明示的な操作（確認ボタン）でのみ実行される設計です。
-
-> 生成ロジックは評価目的で公開しています。詳細は [LICENSE](LICENSE) を参照してください。
-
----
-
-## セットアップ
-
-### 前提
-
-- Docker / Docker Compose
-- （ローカルで直接動かす場合）PHP 8.2+、Composer 2、Node.js 20+
-
-### 1. 環境変数
+### Full stack with Docker
 
 ```bash
 cp .env.example .env
-```
-
-`.env` の以下の値は **必ず変更** してください。
-
-| 変数 | 説明 |
-|------|------|
-| `DB_ROOT_PASSWORD` / `DB_PASSWORD` | MySQL のパスワード |
-| `APP_KEY` | `php artisan key:generate --show` で生成 |
-| `ADMIN_USERNAME` / `ADMIN_PASSWORD` | 初回シードで作成する管理者。未設定なら管理者は作成されません |
-| `APP_URL` / `SANCTUM_STATEFUL_DOMAINS` / `SESSION_DOMAIN` / `FRONTEND_URL` | 公開するドメインに合わせて変更 |
-
-### 2. 起動（本番相当）
-
-```bash
+# set DB_ROOT_PASSWORD, DB_PASSWORD, APP_KEY, ADMIN_USERNAME, ADMIN_PASSWORD
 docker compose --profile prod up -d --build
 docker compose exec laravel php artisan migrate --seed
 ```
 
-`http://localhost` でアクセスできます。
-
-### 3. 起動（開発）
+For local development:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.dev.yml --profile dev up -d --build
 docker compose exec laravel-dev php artisan migrate --seed
 ```
 
-`http://localhost:8081` でアクセスできます（MySQL は `localhost:3307`）。
+### Demo data
 
-### 4. フロントエンドのみローカル実行
-
-```bash
-cd frontend
-npm ci
-npm run dev
-```
+- The static demo generates deterministic data in the browser: `Staff A` … `Staff J`, five shift types, requirements, preferences, compatibility rules, and a monthly roster.
+- The full-stack demo uses `DatabaseSeeder` plus explicit demo data; no real staff or facility data is included.
+- The UI is Japanese by design; the domain terms are explained in the screenshots and in the code.
 
 ---
 
-## テスト
+## Testing & CI
 
 ```bash
 # backend
 cd backend && composer install && php artisan test
 
-# logic engine
+# scheduling engine
 cd logic && composer install && composer test
 
-# frontend build
-cd frontend && npm ci && npm run build
+# front end type check and build
+cd frontend && npm ci && npx tsc --noEmit && npm run build
 
-# E2E（認証情報は環境変数で渡す）
-cd frontend
-E2E_BASE_URL=http://localhost:8081 \
-E2E_USERNAME=<username> \
-E2E_PASSWORD=<password> \
-npm run test:e2e
+# static demo build
+cd frontend && NEXT_IGNORE_INCORRECT_LOCKFILE=1 NEXT_PUBLIC_DEMO_MODE=1 NEXT_PUBLIC_BASE_PATH=/memeShift-portfolio npm run build
 ```
 
-CI（`.github/workflows/deploy.yml`）では lint・PHPUnit・Next.js ビルドを実行します。デプロイジョブは `ENABLE_DEPLOY` リポジトリ変数を `true` にした場合のみ動作します。
+GitHub Actions runs:
+
+- Composer validation and PHP syntax checks;
+- backend PHPUnit;
+- scheduling-engine PHPUnit;
+- frontend type check and production build;
+- static demo build;
+- secret scanning.
+
+The deployment job is disabled unless `ENABLE_DEPLOY` is set to `true`.
 
 ---
 
-## セキュリティに関する注記
+## Security & Privacy
 
-- 認証は Laravel Sanctum のトークン方式。ログインにはレート制限（10 回/分）を設定
-- 管理者アカウントの初期パスワードはリポジトリに含めず、環境変数からのみ作成
-- DB のパスワードにコード上のフォールバック値を持たない
-- `.env` は `.gitignore` / `.dockerignore` の両方で除外
-- 本番プロファイルでは MySQL のポートをホストに公開しない（開発用 override のみ公開）
+This repository is a **sanitized snapshot**:
+
+- no real staff, facility, patient, or customer data;
+- no production domain, IP address, SSH key, API key, database dump, or mailbox;
+- no real `.env` file; `.env.example` contains placeholders only;
+- login is rate-limited; the admin account is created from environment variables only;
+- database passwords have no fallback value in code;
+- the public demo is client-side and never contacts a backend.
+
+The Git history contains a single sanitized commit. If you find a security issue, please open an issue rather than disclosing it publicly.
 
 ---
 
-## ライセンス
+## Design Decisions & Trade-offs
 
-本リポジトリは **評価目的（Evaluation Only）** で公開しています。商用利用・再配布・派生開発は許可されません。詳細は [LICENSE](LICENSE) を参照してください。
+| Decision | Why |
+|---|---|
+| Keep the scheduling engine in plain PHP | Deterministic, testable without Laravel, reusable as a CLI or library |
+| Generate in phases instead of a general solver | Care-facility rules are domain-specific; explicit phases are easier to explain and debug |
+| Explain failures instead of returning a generic error | Schedulers need to know which constraint to relax |
+| Require explicit confirmation for break routes | A published roster must not be silently rewritten |
+| Ship a static demo instead of a live backend | No credentials, database, or production data are exposed |
+| Keep the UI Japanese | The product targets Japanese care facilities; English documentation and captions make it reviewable internationally |
 
-同梱の IPA フォントについては [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。
+---
+
+## Roadmap
+
+- Optional English UI toggle (the current UI is Japanese by design).
+- More property-based tests for the scheduling engine.
+- Additional export formats and print layouts.
+- Richer fairness explanations in the analytics view.
+
+---
+
+## License
+
+This repository is published for **technical evaluation only**. Commercial use, redistribution, and derivative works require prior written permission. See [LICENSE](LICENSE).
+
+Third-party notices, including the IPA font license, are in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+
+---
+
+[日本語版 README はこちら](README.ja.md)
