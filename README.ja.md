@@ -17,6 +17,12 @@
   <img src="docs/screenshots/demo.gif" alt="memeShift デモ: ログイン、勤務表、違反説明、分析" width="820">
 </p>
 
+<p align="center">
+  <img src="docs/screenshots/ci-success.webp" alt="GitHub Actions CI 成功" width="840">
+  <br>
+  <sub>CI（lint / backend / logic / frontend / secret scan）成功。PR では Docker build と deploy はスキップされます。</sub>
+</p>
+
 スクリーンショットは `Staff A` 〜 `Staff J` の合成データで撮影しています。実在のスタッフ・施設・メール・電話・住所は含まれません。
 
 ---

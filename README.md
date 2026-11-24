@@ -47,6 +47,12 @@ The scheduling core is intentionally separated from the web framework, so the sa
   </tr>
 </table>
 
+<p align="center">
+  <img src="docs/screenshots/ci-success.webp" alt="GitHub Actions CI success" width="840">
+  <br>
+  <sub>CI/CD — lint, backend, logic, frontend, and secret scan; Docker/deploy skipped on pull requests</sub>
+</p>
+
 > All screenshots use synthetic demo data (`Staff A` … `Staff J`). No production account or real roster is shown.
 
 ---
