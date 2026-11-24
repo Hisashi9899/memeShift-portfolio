@@ -3,6 +3,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { DEMO_MODE } from '@/lib/demo';
+import Link from 'next/link';
 
 function CornerPaw({ position, pressed }: { position: string; pressed: boolean }) {
   const posClass: Record<string, string> = {
@@ -180,6 +181,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface relative overflow-hidden">
+      {DEMO_MODE && (
+        <Link href="/" className="absolute top-5 left-5 z-20 text-xs font-medium text-gray-500 hover:text-gray-800 transition-colors">
+          ← Case study
+        </Link>
+      )}
       {bgUrl && (
         <div className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(${bgUrl})` }} />

@@ -2,7 +2,9 @@
 
 [![CI](https://github.com/Hisashi9899/memeShift-portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/Hisashi9899/memeShift-portfolio/actions/workflows/deploy.yml)
 
-**A constraint-aware shift scheduling system for care facilities — deterministic generation, fairness scoring, and explainable failures.**
+**Constraint-aware shift scheduling for care facilities — deterministic generation, fairness scoring, and explainable failures.**
+
+**Solo build · ~6 weeks · Next.js 14 + Laravel 10 + a standalone PHP scheduling engine.**
 
 memeShift turns staff availability, required headcount, compatibility rules, and Japanese care-facility shift patterns into a monthly roster. It is built as a small end-to-end product: a Next.js front end, a Laravel API, a standalone PHP scheduling engine, MySQL, Docker, and CI.
 
@@ -54,6 +56,58 @@ The scheduling core is intentionally separated from the web framework, so the sa
 </p>
 
 > All screenshots use synthetic demo data (`Staff A` … `Staff J`). No production account or real roster is shown.
+
+---
+
+## Why this is unusual
+
+Most scheduling demos stop at a form and a table. memeShift has to reason about interacting constraints:
+
+- **Night chains** — a night shift reserves the next day as post-night (`明け`) and the day after as rest.
+- **Fairness** — night counts, early/late balance, holiday budgets, and preference achievement are measured across the year.
+- **Explainability** — every failure names the date, shift, required vs. assigned headcount, and the likely cause.
+- **Repair without silent rewrites** — local repair and break-route search are ranked and shown first; applying a route is an explicit human decision.
+
+The result is a product a care-facility manager can trust, not a spreadsheet with a generate button.
+
+### Scope delivered by one engineer in ~6 weeks
+
+| Area | Evidence |
+|---|---|
+| API | 43 REST endpoints, 14 domain services, Sanctum auth |
+| Frontend | 6 screens, 25 components, 4,100+ lines of TypeScript/TSX |
+| Engine | 37 KB standalone PHP engine, zero Laravel dependencies, 4 PHPUnit tests |
+| Data | 15 migrations, MySQL 8 |
+| Infrastructure | Docker Compose, Nginx, GitHub Actions, static GitHub Pages demo |
+| Quality | PHP lint, backend PHPUnit, engine PHPUnit, TypeScript, Next build, gitleaks |
+
+> The point is not the line count. The point is that the same person designed the domain model, wrote the engine, shipped the UI, and set up the delivery pipeline.
+
+### Try it in two minutes
+
+1. Open the static demo — any credentials work.
+2. Click **勤務自動作成** (Generate roster) and read the conflict panel.
+3. Open **統計** (Statistics) for workload, fairness, safety, and growth metrics.
+4. Open **希望入力** (Preferences) for day-off and fixed-shift requests.
+
+| Japanese UI | English |
+|---|---|
+| 勤務自動作成 | Generate roster |
+| 勤務パターン制約 | Scheduling constraints |
+| 希望入力 | Preferences |
+| 設定 | Settings |
+| 統計 | Statistics |
+| 明け | Post-night rest |
+| 休み | Day off |
+
+### Delivery shape
+
+| Phase | Focus |
+|---|---|
+| 1 | Domain model, MySQL schema, API surface |
+| 2 | Generation engine, constraints, fairness metrics |
+| 3 | Local repair, break-route search, explainability |
+| 4 | Next.js UI, Docker, CI, static demo |
 
 ---
 
