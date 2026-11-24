@@ -199,7 +199,8 @@ export function CaseStudy() {
                 <h2 className="mt-2 text-3xl font-bold tracking-tight">See the behaviour, not just the screens.</h2>
                 <p className="mt-3 text-slate-600 leading-relaxed">
                   The demo is a static build with deterministic data. Everything below works without
-                  a backend, account, or API key.
+                  a backend, account, or API key. The roster table is best viewed on a desktop browser;
+                  the landing page and login are responsive.
                 </p>
               </div>
               <a
