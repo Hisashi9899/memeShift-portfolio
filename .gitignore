@@ -43,6 +43,10 @@ verify_*.php
 measure_*.php
 tmp_*.php
 
+# PHPUnit cache
+.phpunit.result.cache
+**/.phpunit.result.cache
+
 # Laravel generated files
 /backend/public/storage
 /backend/storage/logs/*
