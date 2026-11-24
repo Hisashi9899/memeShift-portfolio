@@ -75,7 +75,7 @@ The result is a product a care-facility manager can trust, not a spreadsheet wit
 | Area | Evidence |
 |---|---|
 | API | 43 REST endpoints, 14 domain services, Sanctum auth |
-| Frontend | 6 screens, 25 components, 4,100+ lines of TypeScript/TSX |
+| Frontend | 6 screens, 23 components, 4,100+ lines of TypeScript/TSX |
 | Engine | 37 KB standalone PHP engine, zero Laravel dependencies, 4 PHPUnit tests |
 | Data | 15 migrations, MySQL 8 |
 | Infrastructure | Docker Compose, Nginx, GitHub Actions, static GitHub Pages demo |

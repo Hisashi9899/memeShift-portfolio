@@ -43,7 +43,7 @@
 | 領域 | 内容 |
 |---|---|
 | API | REST 43エンドポイント、ドメインサービス14本、Sanctum認証 |
-| フロントエンド | 6画面、25コンポーネント、TypeScript/TSX 4,100行以上 |
+| フロントエンド | 6画面、23コンポーネント、TypeScript/TSX 4,100行以上 |
 | エンジン | 37KBのスタンドアロンPHPエンジン（Laravel非依存）、PHPUnit 4テスト |
 | データ | マイグレーション15本、MySQL 8 |
 | インフラ | Docker Compose、Nginx、GitHub Actions、GitHub Pages静的デモ |
