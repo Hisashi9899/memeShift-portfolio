@@ -65,7 +65,7 @@ const steps = [
 ];
 
 const scope = [
-  ['Frontend', 'Next.js 14 App Router, 6 screens, 25 components, TypeScript + Tailwind'],
+  ['Frontend', 'Next.js 14 App Router, 6 screens, 23 components, TypeScript + Tailwind'],
   ['Backend', 'Laravel 10, 43 REST endpoints, 14 domain services, Sanctum auth'],
   ['Engine', 'Standalone PHP scheduling engine (37 KB), deterministic, zero Laravel dependencies'],
   ['Data', '15 migrations, MySQL 8, requirements, preferences, compatibility rules, overrides'],
