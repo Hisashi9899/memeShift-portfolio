@@ -61,10 +61,14 @@ jobs:
         run: composer install --no-interaction --no-progress
       - name: PHPUnit logic tests
         working-directory: logic
-        run: php vendor/bin/phpunit 2>/dev/null || echo "No tests yet"
+        run: php vendor/bin/phpunit
 
   test-frontend:
     runs-on: ubuntu-latest
+    env:
+      # Next 14.2.x tries to patch package-lock.json for optional SWC
+      # dependencies; the lockfile is already complete on CI.
+      NEXT_IGNORE_INCORRECT_LOCKFILE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -76,9 +80,29 @@ jobs:
       - name: Lint
         working-directory: frontend
         run: npm run lint 2>/dev/null || echo "No lint script"
+      - name: Type check
+        working-directory: frontend
+        run: npx tsc --noEmit
       - name: Build
         working-directory: frontend
         run: npm run build
+      - name: Build static demo
+        working-directory: frontend
+        env:
+          NEXT_PUBLIC_DEMO_MODE: "1"
+          NEXT_PUBLIC_BASE_PATH: "/memeShift-portfolio"
+        run: npm run build
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   docker-build:
     runs-on: ubuntu-latest
