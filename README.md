@@ -70,6 +70,14 @@ Most scheduling demos stop at a form and a table. memeShift has to reason about 
 
 The result is a product a healthcare manager can trust, not a spreadsheet with a generate button.
 
+### A small human touch
+
+The login card has a hidden interaction: click its four corners to replace the background with an image of your choice. It was built for nurses and care staff who work long shifts — a small moment of calm before the roster. The image is stored in `localStorage` only and is never uploaded.
+
+<p align="center">
+  <img src="docs/screenshots/easter-egg.gif" alt="Hidden login interaction: click the four corners to change the background" width="420">
+</p>
+
 ### Scope delivered by one engineer — record and standard timelines
 
 | Area | Evidence |
