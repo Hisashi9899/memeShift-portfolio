@@ -1,5 +1,6 @@
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const REPO = 'https://github.com/Hisashi9899/memeShift-portfolio';
+const CONTRA = 'https://contra.com/neutron_d0wbklm2/work';
 
 function shot(name: string) {
   return `${BASE}/screenshots/${name}`;
@@ -95,6 +96,9 @@ export function CaseStudy() {
           </span>
         </div>
         <nav className="flex items-center gap-3 text-sm text-slate-300">
+          <a className="hidden sm:inline font-medium text-white hover:text-primary-200 transition-colors" href={CONTRA}>
+            Hire me
+          </a>
           <a className="hidden sm:inline hover:text-white transition-colors" href={REPO}>GitHub</a>
           <a className="hidden sm:inline hover:text-white transition-colors" href={`${REPO}/blob/main/README.md`}>README</a>
           <a
@@ -384,6 +388,34 @@ export function CaseStudy() {
               </a>
               <a className="rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium hover:bg-white/10 transition-colors" href={`${REPO}/blob/main/LICENSE`}>
                 License
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-white/10 bg-gradient-to-r from-primary-500/15 via-primary-500/5 to-transparent">
+          <div className="max-w-6xl mx-auto px-6 py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-primary-300">Work with me</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight">Need this built for your team?</h2>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-300">
+                I design, build, and ship production systems end to end as a single owner: MVP in 2–6 weeks,
+                production system plus CI/CD in 10–14 weeks, or fractional engineering at 20–30 hours a week.
+                Healthcare, safety constraints, and exception-heavy workflows are my specialty.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <a
+                className="rounded-xl bg-primary-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-900/30 hover:bg-primary-400 transition-colors"
+                href={CONTRA}
+              >
+                Hire me on Contra
+              </a>
+              <a
+                className="rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:bg-white/10 transition-colors"
+                href={REPO}
+              >
+                See the code
               </a>
             </div>
           </div>

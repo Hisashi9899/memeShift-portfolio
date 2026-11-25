@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://hisashi9899.github.io/memeShift-portfolio/sitemap.xml
