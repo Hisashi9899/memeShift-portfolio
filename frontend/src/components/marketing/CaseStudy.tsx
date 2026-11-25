@@ -11,7 +11,7 @@ const metrics = [
   { value: '4,100+', label: 'lines of app code' },
   { value: '37 KB', label: 'scheduling engine' },
   { value: '15', label: 'DB migrations' },
-  { value: '~6 weeks', label: 'solo build' },
+  { value: '2 wk', label: 'fastest MVP' },
 ];
 
 const hardParts = [
@@ -71,6 +71,7 @@ const scope = [
   ['Data', '15 migrations, MySQL 8, requirements, preferences, compatibility rules, overrides'],
   ['Infra', 'Docker Compose, Nginx, GitHub Actions, static GitHub Pages demo'],
   ['Quality', 'PHP lint, backend PHPUnit, engine PHPUnit, TypeScript, Next build, gitleaks'],
+  ['Timeline', 'Fastest recorded: MVP 2 weeks; production 1 month; CI/CD 1.5 months. Standard: MVP 4–6 weeks; production + CI/CD 10–14 weeks.'],
 ];
 
 const stack = [
@@ -110,14 +111,14 @@ export function CaseStudy() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-slate-300">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-              Solo build · ~6 weeks · 1 engineer
+              Solo build · MVP 2 weeks · standard 4–6 weeks
             </div>
             <h1 className="mt-5 text-4xl md:text-5xl font-bold leading-[1.08] tracking-tight">
               Shift scheduling<br />
               that can <span className="text-primary-300">explain itself.</span>
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-300">
-              memeShift generates monthly rosters for care facilities under hard constraints,
+              memeShift generates monthly rosters for healthcare professionals and care facilities under hard constraints,
               measures fairness across the year, and tells you exactly why a roster cannot be
               completed. When it can be repaired, it shows the route before changing anything.
             </p>
@@ -269,7 +270,9 @@ export function CaseStudy() {
               </p>
               <div className="mt-6 grid grid-cols-2 gap-3">
                 {[
-                  ['~6 weeks', 'from first commit to portfolio-ready'],
+                  ['2 wk', 'fastest MVP (memeShift)'],
+                  ['4–6 wk', 'standard MVP estimate'],
+                  ['10–14 wk', 'production + CI/CD'],
                   ['1', 'engineer across the full stack'],
                   ['0', 'real staff or facility records in this repo'],
                   ['6', 'CI checks on every pull request'],
@@ -280,6 +283,10 @@ export function CaseStudy() {
                   </div>
                 ))}
               </div>
+              <p className="mt-4 text-[11px] leading-relaxed text-slate-400">
+                Fastest recorded: MVP 2 weeks, production 1 month, CI/CD 1.5 months.
+                Standard estimate: MVP 4–6 weeks, production + CI/CD 10–14 weeks.
+              </p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5">
               <h3 className="text-sm font-semibold">Scope delivered</h3>

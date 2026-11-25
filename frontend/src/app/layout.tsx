@@ -6,7 +6,7 @@ import { ToastProvider } from '@/components/ui/Toast';
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
 const DESCRIPTION =
-  'Constraint-aware shift scheduling for care facilities. Deterministic rosters, fairness scoring, and explainable failures. Solo full-stack build in ~6 weeks.';
+  'Constraint-aware shift scheduling for healthcare professionals. Deterministic rosters, fairness scoring, and explainable failures. Fastest recorded MVP in 2 weeks; standard MVP 4–6 weeks; production + CI/CD 10–14 weeks.';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://hisashi9899.github.io'),

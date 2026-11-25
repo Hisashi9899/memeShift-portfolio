@@ -2,15 +2,15 @@
 
 [![CI](https://github.com/Hisashi9899/memeShift-portfolio/actions/workflows/deploy.yml/badge.svg)](https://github.com/Hisashi9899/memeShift-portfolio/actions/workflows/deploy.yml)
 
-**Constraint-aware shift scheduling for care facilities — deterministic generation, fairness scoring, and explainable failures.**
+**Constraint-aware shift scheduling for healthcare professionals — deterministic generation, fairness scoring, and explainable failures.**
 
-**Solo build · ~6 weeks · Next.js 14 + Laravel 10 + a standalone PHP scheduling engine.**
+**Solo build · MVP in 2 weeks (record) · standard 4–6 weeks · Next.js 14 + Laravel 10 + a standalone PHP scheduling engine.**
 
-memeShift turns staff availability, required headcount, compatibility rules, and Japanese care-facility shift patterns into a monthly roster. It is built as a small end-to-end product: a Next.js front end, a Laravel API, a standalone PHP scheduling engine, MySQL, Docker, and CI.
+memeShift turns staff availability, required headcount, compatibility rules, and Japanese medical and care shift patterns into a monthly roster. It is built as a small end-to-end product: a Next.js front end, a Laravel API, a standalone PHP scheduling engine, MySQL, Docker, and CI.
 
 The scheduling core is intentionally separated from the web framework, so the same engine can run as a library, a CLI process, or inside the API. Generation is not a black box: when a roster cannot be completed, the system explains which constraint is short, by how much, and what to change.
 
-> **Portfolio snapshot.** This public repository is a sanitized snapshot for technical evaluation. It contains no real staff, facility, patient, customer, domain, or credential data. The UI is in Japanese because the target users are Japanese care facilities; English captions are provided with the screenshots.
+> **Portfolio snapshot.** This public repository is a sanitized snapshot for technical evaluation. It contains no real staff, facility, patient, customer, domain, or credential data. The UI is in Japanese because the target users are Japanese healthcare professionals; English captions are provided with the screenshots.
 
 ---
 
@@ -68,9 +68,9 @@ Most scheduling demos stop at a form and a table. memeShift has to reason about 
 - **Explainability** — every failure names the date, shift, required vs. assigned headcount, and the likely cause.
 - **Repair without silent rewrites** — local repair and break-route search are ranked and shown first; applying a route is an explicit human decision.
 
-The result is a product a care-facility manager can trust, not a spreadsheet with a generate button.
+The result is a product a healthcare manager can trust, not a spreadsheet with a generate button.
 
-### Scope delivered by one engineer in ~6 weeks
+### Scope delivered by one engineer — record and standard timelines
 
 | Area | Evidence |
 |---|---|
@@ -82,6 +82,16 @@ The result is a product a care-facility manager can trust, not a spreadsheet wit
 | Quality | PHP lint, backend PHPUnit, engine PHPUnit, TypeScript, Next build, gitleaks |
 
 > The point is not the line count. The point is that the same person designed the domain model, wrote the engine, shipped the UI, and set up the delivery pipeline.
+
+### Timeline: record vs standard
+
+| Timeline | MVP | Production + CI/CD |
+|---|---|---|
+| **Fastest recorded (memeShift)** | **2 weeks** | **1 month / 1.5 months** |
+| **Standard estimate** | **4–6 weeks** | **10–14 weeks** |
+| Complex integrations / compliance | 6–8 weeks | 16+ weeks |
+
+> The 2-week MVP is a specific record: a tightly scoped v1, a domain I knew deeply, and after-hours work while employed full-time. Standard client work is estimated at 4–6 weeks for an MVP and 10–14 weeks for production + CI/CD.
 
 ### Try it in two minutes
 
@@ -115,7 +125,7 @@ The result is a product a care-facility manager can trust, not a spreadsheet wit
 
 ## Project Overview
 
-Care-facility scheduling is a constrained optimization problem with soft preferences and hard safety rules. A roster must satisfy headcount requirements while respecting:
+Healthcare scheduling is a constrained optimization problem with soft preferences and hard safety rules. A roster must satisfy headcount requirements while respecting:
 
 - night shift → post-night (`明け`) → rest chains;
 - maximum consecutive working days;
@@ -154,7 +164,7 @@ Generation is built from domain rules rather than a generic solver:
 - **Compatibility** — `must_together` / `must_separate` rules prevent unsafe pairings.
 - **Preferences** — requested days off and fixed shifts are applied before general assignment.
 
-The result is a roster that reflects how care facilities actually operate, not a generic round-robin.
+The result is a roster that reflects how medical and care facilities actually operate, not a generic round-robin.
 
 ### 2. Fairness is measured, not assumed
 
@@ -402,11 +412,11 @@ The Git history contains a single sanitized commit. If you find a security issue
 | Decision | Why |
 |---|---|
 | Keep the scheduling engine in plain PHP | Deterministic, testable without Laravel, reusable as a CLI or library |
-| Generate in phases instead of a general solver | Care-facility rules are domain-specific; explicit phases are easier to explain and debug |
+| Generate in phases instead of a general solver | Medical and care rules are domain-specific; explicit phases are easier to explain and debug |
 | Explain failures instead of returning a generic error | Schedulers need to know which constraint to relax |
 | Require explicit confirmation for break routes | A published roster must not be silently rewritten |
 | Ship a static demo instead of a live backend | No credentials, database, or production data are exposed |
-| Keep the UI Japanese | The product targets Japanese care facilities; English documentation and captions make it reviewable internationally |
+| Keep the UI Japanese | The product targets Japanese healthcare professionals; English documentation and captions make it reviewable internationally |
 
 ---
 
