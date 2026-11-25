@@ -12,6 +12,8 @@ The scheduling core is intentionally separated from the web framework, so the sa
 
 > **Portfolio snapshot.** This public repository is a sanitized snapshot for technical evaluation. It contains no real staff, facility, patient, customer, domain, or credential data. The UI is in Japanese because the target users are Japanese healthcare professionals; English captions are provided with the screenshots.
 
+**Available for contract work** — MVP builds, production systems with CI/CD, and fractional engineering. [Profile and packages on Contra](https://contra.com/neutron_d0wbklm2/work).
+
 ---
 
 ## Screenshots
