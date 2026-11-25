@@ -75,6 +75,9 @@ export default function LoginPage() {
     cornerTimer.current = undefined;
   }, []);
 
+  // Hidden delight: clicking the four corners of the card lets care staff
+  // replace the background with an image of their choice. The image is stored
+  // only in localStorage and is never uploaded.
   const handleCornerClick = useCallback((k: string) => {
     setPressed(prev => {
       const next = new Set(prev);

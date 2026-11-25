@@ -19,6 +19,7 @@ const files = [
   'login.webp',
   'demo.gif',
   'ci-success.webp',
+  'easter-egg.gif',
 ];
 
 mkdirSync(out, { recursive: true });

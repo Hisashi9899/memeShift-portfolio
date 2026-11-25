@@ -192,6 +192,33 @@ export function CaseStudy() {
           </div>
         </section>
 
+        <section className="max-w-6xl mx-auto px-6 py-16">
+          <div className="grid lg:grid-cols-[1fr_1.05fr] gap-10 items-center">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-amber-300">A small human touch</p>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight">Designed for the people behind the roster.</h2>
+              <p className="mt-3 text-slate-300 leading-relaxed">
+                Nurses and care staff work long shifts under emotional load. The login card has a
+                hidden interaction: click its four corners to replace the background with an image
+                of your choice. It is a small moment of calm before the roster — optional, private,
+                and never uploaded.
+              </p>
+              <ul className="mt-5 space-y-2 text-sm text-slate-300">
+                <li>• Four-corner gesture, no visible button</li>
+                <li>• Image stored in localStorage only</li>
+                <li>• Never sent to the server</li>
+              </ul>
+            </div>
+            <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl">
+              <img
+                src={shot('easter-egg.gif')}
+                alt="Hidden login interaction: clicking the four corners replaces the background"
+                className="w-full"
+              />
+            </div>
+          </div>
+        </section>
+
         <section className="bg-surface text-slate-900">
           <div className="max-w-6xl mx-auto px-6 py-16">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
