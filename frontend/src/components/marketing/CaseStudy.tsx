@@ -380,6 +380,9 @@ export function CaseStudy() {
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
+              <a className="rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium hover:bg-white/10 transition-colors" href={`${BASE}/writing/explaining-a-failed-roster/`}>
+                Read the write-up
+              </a>
               <a className="rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-medium hover:bg-white/10 transition-colors" href={`${REPO}/blob/main/README.md`}>
                 Read the README
               </a>
