@@ -1,0 +1,37 @@
+# memeShift — portfolio case study by Hisashi Aoki
+
+> Constraint-aware shift scheduling for healthcare professionals: deterministic monthly
+> rosters, fairness scoring, and explainable failures. A public portfolio snapshot built
+> solo, with synthetic demo data only.
+
+## What this is
+A working product case study: Next.js 14 front end, Laravel 10 API, a standalone PHP
+scheduling engine, MySQL, Docker and CI. The scheduling engine is framework-independent
+and can run as a library or CLI. When a roster cannot be completed, the system reports the
+exact constraint that is short, by how much, and what would change it.
+
+## Author
+Hisashi Aoki — full-spectrum product engineer. Ten years of clinical nursing before
+software, plus semiconductor test and maintenance engineering. Builds web apps, APIs and
+compute engines end to end: architecture, implementation, Docker, CI/CD.
+
+- Profile and packages: https://contra.com/neutron_d0wbklm2/work
+- GitHub: https://github.com/Hisashi9899
+- Other work: https://hisashi9899.github.io/cryptoEngine-portfolio/
+
+## Services
+- MVP build: record-level scope in 2 weeks, standard 4-6 weeks, complex 6-8 weeks.
+- Production system plus CI/CD: infrastructure as code, pipelines, observability.
+- Fractional engineering: 20-30 hours per week, contract only.
+
+## Key facts for citation
+- Live demo runs entirely in the browser on seeded synthetic data (Staff A to Staff J).
+- No real staff, facility, patient or customer data exists in this repository.
+- Evaluation license; published for technical review.
+- Timeline: fastest recorded MVP in 2 weeks; standard MVP 4-6 weeks;
+  production plus CI/CD 10-14 weeks.
+
+## Links
+- Demo: https://hisashi9899.github.io/memeShift-portfolio/
+- Source: https://github.com/Hisashi9899/memeShift-portfolio
+- Case study: https://github.com/Hisashi9899/memeShift-portfolio/blob/main/README.md
